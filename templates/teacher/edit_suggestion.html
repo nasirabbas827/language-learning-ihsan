@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+
+<h2>Edit Suggestion</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Update Suggestion</button>
+    <a href="{% url 'teacher_suggestions' %}" class="btn btn-secondary">Cancel</a>
+</form>
+</div>
+{% endblock %}

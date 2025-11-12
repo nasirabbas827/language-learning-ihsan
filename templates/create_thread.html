@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card">
+    <h3>Create Discussion Thread</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn btn-success mt-2">Create Thread</button>
+    </form>
+</div>
+{% endblock %}

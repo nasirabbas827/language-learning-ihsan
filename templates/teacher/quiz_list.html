@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Quiz List{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>Quizzes</h2>
+  <a href="{% url 'quiz_create' %}" class="btn btn-success">+ Add Quiz</a>
+  <table style="width:100%; margin-top:20px; border-collapse:collapse;">
+    <thead>
+      <tr style="background:#f4f4f4;">
+        <th>Lesson</th>
+        <th>Question</th>
+        <th>Correct Option</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for quiz in quizzes %}
+      <tr>
+        <td>{{ quiz.lesson.title }}</td>
+        <td>{{ quiz.question }}</td>
+        <td>{{ quiz.correct_option }}</td>
+        <td>
+          <a href="{% url 'quiz_update' quiz.pk %}" class="btn">Edit</a>
+          <a href="{% url 'quiz_delete' quiz.pk %}" class="btn btn-danger">Delete</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4">No quizzes yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

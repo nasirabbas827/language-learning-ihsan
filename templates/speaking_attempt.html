@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Speaking - {{ lesson.title }}{% endblock %}
+{% block content %}
+<div class="card">
+    <h2>Speaking Exercises for {{ lesson.title }}</h2>
+    {% for exercise in exercises %}
+        <h4>{{ exercise.title }} ({{ exercise.get_exercise_type_display }})</h4>
+        <p>{{ exercise.description }}</p>
+        <p><strong>Target Phrase:</strong> {{ exercise.target_phrase }}</p>
+        {% if exercise.audio_example %}
+            <audio controls>
+                <source src="{{ exercise.audio_example.url }}" type="audio/mpeg">
+            </audio>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="exercise_id" value="{{ exercise.id }}">
+            
+            <!-- Show recognized speech in a disabled box -->
+            <textarea rows="2" style="width:100%;" readonly placeholder="Your speech will appear here after recording...">
+                {{ spoken_text }}
+            </textarea>
+            
+            <button type="submit" class="btn btn-primary">Start & Record</button>
+        </form>
+        <hr>
+    {% endfor %}
+</div>
+{% endblock %}

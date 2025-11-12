@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Writing Feedback{% endblock %}
+{% block content %}
+<div class="card">
+    <h2>Feedback for {{ exercise.title }}</h2>
+    <p><strong>Your Essay:</strong></p>
+    <blockquote>{{ essay_text }}</blockquote>
+
+    <h3>Grammar Feedback</h3>
+    <pre>{{ grammar_feedback }}</pre>
+
+    <h3>Spelling Feedback</h3>
+    <pre>{{ spelling_feedback }}</pre>
+
+    <a href="{% url 'lesson_exercises' lesson.id %}" class="btn btn-secondary">Back to Exercises</a>
+</div>
+{% endblock %}

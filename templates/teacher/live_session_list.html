@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Live Sessions{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>My Live Sessions</h2>
+  <a href="{% url 'live_session_create' %}" class="btn btn-success">+ Add Live Session</a>
+  <table style="width:100%; margin-top:20px; border-collapse:collapse;">
+    <thead>
+      <tr style="background:#f4f4f4;">
+        <th>Title</th>
+        <th>Start Time</th>
+        <th>End Time</th>
+        <th>Status</th>
+        <th>Session URL</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for session in sessions %}
+      <tr>
+        <td>{{ session.title }}</td>
+        <td>{{ session.start_time|date:"Y-m-d H:i" }}</td>
+        <td>{{ session.end_time|date:"Y-m-d H:i" }}</td>
+        <td>{{ session.get_status_display }}</td>
+        <td><a href="{{ session.session_url }}" target="_blank">Join</a></td>
+        <td>
+          <a href="{% url 'live_session_update' session.pk %}" class="btn">Edit</a>
+          <a href="{% url 'live_session_delete' session.pk %}" class="btn btn-danger">Delete</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6">No live sessions scheduled yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

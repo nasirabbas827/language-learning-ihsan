@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}{{ lesson.title }}{% endblock %}
+{% block content %}
+<div class="card">
+    <h2>{{ lesson.title }}</h2>
+    <p><strong>Skill Level:</strong> {{ lesson.skill_level|capfirst }}</p>
+    <p><strong>Category:</strong> {{ lesson.category|capfirst }}</p>
+    <p>{{ lesson.description }}</p>
+
+    <h3>Lesson Contents</h3>
+    {% if contents %}
+        <ul>
+            {% for content in contents %}
+                <li>
+                    <strong>{{ content.content_type|capfirst }}</strong>:
+                    {% if content.content_type == "text" %}
+                        <p>{{ content.content }}</p>
+                    {% elif content.content_type == "image" and content.media_file %}
+                        <img src="{{ content.media_file.url }}" alt="Image" style="max-width:300px;">
+                    {% elif content.content_type == "audio" and content.media_file %}
+                        <audio controls>
+                            <source src="{{ content.media_file.url }}" type="audio/mpeg">
+                        </audio>
+                    {% elif content.content_type == "video" and content.media_file %}
+                        <video controls style="max-width:400px;">
+                            <source src="{{ content.media_file.url }}" type="video/mp4">
+                        </video>
+                    {% elif content.content_type == "flashcard" %}
+                        <p>Flashcard: {{ content.content }}</p>
+                    {% else %}
+                        <p><em>No file uploaded for this content.</em></p>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No content added for this lesson yet.</p>
+    {% endif %}
+
+    <div style="margin-top:20px;">
+        <a href="{% url 'lesson_exercises' lesson.pk %}" class="btn btn-primary">Attempt Exercises</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Writing Exercise - {{ lesson.title }}{% endblock %}
+{% block content %}
+<div class="card">
+    <h2>Writing Exercises for {{ lesson.title }}</h2>
+    {% for exercise in exercises %}
+        <h3>{{ exercise.title }}</h3>
+        <p>{{ exercise.prompt }}</p>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="exercise_id" value="{{ exercise.id }}">
+            <textarea name="essay_text" rows="6" style="width:100%;" placeholder="Write your essay here..."></textarea>
+            <br>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <hr>
+    {% endfor %}
+</div>
+{% endblock %}

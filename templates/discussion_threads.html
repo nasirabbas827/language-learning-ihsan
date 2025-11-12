@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Discussion Threads{% endblock %}
+{% block content %}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h2 class="display-5 text-dark">Community Discussion Forum</h2>
+        <a href="{% url 'create_thread' %}" class="btn btn-primary btn-lg shadow-sm">Start New Thread</a>
+    </div>
+
+    {% if threads %}
+    <div class="row row-cols-1 g-4">
+        {% for thread in threads %}
+        <div class="col">
+            <div class="card shadow-sm h-100 discussion-card" 
+                 onclick="window.location.href='{% url 'thread_detail' thread.id %}'" 
+                 style="cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <a href="{% url 'thread_detail' thread.id %}" class="text-decoration-none">
+                                <h4 class="card-title text-primary mb-1">{{ thread.title }}</h4>
+                            </a>
+                            <p class="card-text text-muted mb-0 small">
+                                Started by <span class="fw-bold text-secondary">{{ thread.created_by.full_name }}</span> 
+                                on {{ thread.created_at|date:"F d, Y" }} at {{ thread.created_at|date:"H:i" }}
+                            </p>
+                        </div>
+
+                        <div class="text-end ms-3">
+                            <span class="badge bg-secondary p-2 shadow-sm" style="font-size: 0.9rem;">
+                                {{ thread.reply_count|default:0 }} Replies
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-footer bg-light border-0">
+                    <small class="text-info">
+                        View conversation →
+                    </small>
+                </div>
+            </div>
+            
+            <style>
+                .discussion-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 8px 15px rgba(52, 152, 219, 0.2) !important;
+                    border: 1px solid #3498db;
+                }
+            </style>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card p-5 text-center shadow-lg">
+        <h3 class="text-secondary">Silence in the forum... 🤫</h3>
+        <p class="lead text-muted">Be the first to start a conversation and ask a question!</p>
+        <a href="{% url 'create_thread' %}" class="btn btn-success mt-3 mx-auto" style="max-width: 300px;">Start Discussion Now</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Peer Chat{% endblock %}
+{% block content %}
+{% load static %}
+
+<div class="container mt-5">
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white text-center">
+            <h2>Peer Chat</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <!-- Sidebar (Chat Partners) -->
+                <div class="col-md-4 border-end">
+                    <h5 class="text-center mb-3">Select Chat Partner</h5>
+                    <div class="list-group">
+                        {% for partner in chat_partners %}
+                            <a href="?user={{ partner.user_id }}" 
+                               class="list-group-item list-group-item-action {% if selected_user and partner.user_id == selected_user.user_id %}active{% endif %}">
+                                {{ partner.full_name }} ({{ partner.usertype }})
+                            </a>
+                        {% empty %}
+                            <p class="text-center text-muted">No available users to chat.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Chat Window -->
+                <div class="col-md-8">
+                    {% if selected_user %}
+                        <h5 class="text-center mb-3">Chat with {{ selected_user.full_name }}</h5>
+                        <div class="border rounded p-3 mb-3" style="height: 400px; overflow-y: auto;">
+                            {% for chat in chats %}
+                                <div class="{% if chat.sender.user_id == current_user.user_id %}text-end{% else %}text-start{% endif %} mb-2">
+                                    <div class="d-inline-block p-2 rounded {% if chat.sender.user_id == current_user.user_id %}bg-primary text-white{% else %}bg-light{% endif %}">
+                                        <small>{{ chat.message }}</small><br>
+                                        <small class="text-muted">{{ chat.sent_at|date:"M d, H:i" }}</small>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <p class="text-center text-muted">No messages yet.</p>
+                            {% endfor %}
+                        </div>
+
+                        <form method="POST">
+                            {% csrf_token %}
+                            {{ form.receiver.as_hidden }}
+                            <div class="mb-3">
+                                <textarea name="message" class="form-control" rows="3" placeholder="Type your message..." required></textarea>
+                            </div>
+                            <input type="hidden" name="receiver" value="{{ selected_user.user_id }}">
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-success">Send Message</button>
+                            </div>
+                        </form>
+                    {% else %}
+                        <p class="text-center text-muted mt-5">Select a user from the left to start chatting.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

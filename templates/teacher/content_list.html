@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Lesson Contents{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>All Lesson Contents</h2>
+  <a href="{% url 'content_create' %}" class="btn">Add Lesson Content</a>
+  <table>
+    <thead>
+      <tr>
+        <th>Lesson</th>
+        <th>Type</th>
+        <th>Content</th>
+        <th>Media</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in contents %}
+        <tr>
+          <td>{{ c.lesson.title }}</td>
+          <td>{{ c.get_content_type_display }}</td>
+          <td>{{ c.content|truncatechars:40 }}</td>
+          <td>
+            {% if c.media_file %}
+              <a href="{{ c.media_file.url }}" target="_blank">View</a>
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td>
+            <a href="{% url 'content_update' c.id %}">Edit</a> |
+            <a href="{% url 'content_delete' c.id %}">Delete</a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5">No contents found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+{% load static %}
+
+<div class="container mt-5">
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white text-center">
+            <h2>Live Sessions</h2>
+        </div>
+        <div class="card-body">
+            <p class="text-center">Welcome, {{ request.session.username }}! Here are all the upcoming and ongoing sessions.</p>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Title</th>
+                            <th>Tutor</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for session in sessions %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ session.title }}</td>
+                                <td>{{ session.tutor.username }}</td>
+                                <td>{{ session.start_time|date:"Y-m-d H:i" }}</td>
+                                <td>{{ session.end_time|date:"Y-m-d H:i" }}</td>
+                                <td>
+                                    {% if session.status == "scheduled" %}
+                                        <span class="badge bg-info text-dark">Scheduled</span>
+                                    {% elif session.status == "ongoing" %}
+                                        <span class="badge bg-success">Ongoing</span>
+                                    {% elif session.status == "completed" %}
+                                        <span class="badge bg-secondary">Completed</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if session.status != "completed" %}
+                                        <a href="{{ session.session_url }}" target="_blank" class="btn btn-sm btn-success">Join</a>
+                                    {% else %}
+                                        <span class="text-muted">Ended</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">No live sessions available yet.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="{% url 'student_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

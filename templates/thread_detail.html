@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}{{ thread.title }}{% endblock %}
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="card shadow-lg mb-4 border-primary">
+        <div class="card-header bg-primary text-white p-3">
+            <h1 class="h3 mb-0">{{ thread.title }}</h1>
+        </div>
+        <div class="card-body">
+            <p class="lead text-dark">{{ thread.description }}</p>
+
+            <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                <p class="small text-muted mb-0">
+                    Started by <span class="fw-bold text-secondary">{{ thread.created_by.full_name }}</span> 
+                    on {{ thread.created_at|date:"F d, Y" }} at {{ thread.created_at|date:"H:i" }}
+                </p>
+                <span class="badge bg-secondary p-2">Original Post</span>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <h3 class="mb-4 text-dark">Discussion Replies ({{ posts|length }})</h3>
+    
+    <div class="d-grid gap-3 mb-5">
+        {% for post in posts %}
+        <div class="card shadow-sm h-100 border-light-subtle">
+            <div class="card-body p-4">
+                <p class="card-text text-dark">{{ post.content }}</p>
+            </div>
+            <div class="card-footer bg-light border-0">
+                <small class="text-muted">
+                    Replied by <span class="fw-semibold text-info">{{ post.author.full_name }}</span> 
+                    on {{ post.created_at|date:"F d, Y" }} at {{ post.created_at|date:"H:i" }}
+                </small>
+            </div>
+        </div>
+        {% empty %}
+        <div class="alert alert-info text-center" role="alert">
+            <h5 class="alert-heading">Be the first to reply!</h5>
+            <p class="mb-0">There are no replies to this thread yet. Share your thoughts or answer the question.</p>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <hr>
+
+    <div class="card shadow-sm mb-5">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">💬 Post Your Reply</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label fw-bold">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <div class="form-text">{{ field.help_text }}</div>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <div class="alert alert-danger mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+                
+                <button type="submit" class="btn btn-success btn-lg mt-3">Submit Reply</button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <a href="{% url 'discussion_threads' %}" class="btn btn-outline-secondary">← Back to Discussion List</a>
+    </div>
+</div>
+{% endblock %}

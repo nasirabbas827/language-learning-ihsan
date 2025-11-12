@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Speaking Feedback{% endblock %}
+{% block content %}
+<div class="card">
+    <h2>Feedback for {{ exercise.title }}</h2>
+    <p><strong>Target Phrase:</strong> {{ exercise.target_phrase }}</p>
+    <p><strong>Your Speech:</strong> {{ spoken_text }}</p>
+    <p><strong>Score:</strong> {{ score }}%</p>
+    <pre>{{ feedback }}</pre>
+
+    <a href="{% url 'lesson_exercises' lesson.id %}" class="btn btn-secondary">Back to Exercises</a>
+</div>
+{% endblock %}

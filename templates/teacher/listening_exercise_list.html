@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Listening Exercises{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>Listening Exercises</h2>
+  <a href="{% url 'listening_exercise_create' %}" class="btn btn-success">+ Add Listening Exercise</a>
+  <table style="width:100%; margin-top:20px; border-collapse:collapse;">
+    <thead>
+      <tr style="background:#f4f4f4;">
+        <th>Lesson</th>
+        <th>Title</th>
+        <th>Type</th>
+        <th>Audio</th>
+        <th>Video</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ex in exercises %}
+      <tr>
+        <td>{{ ex.lesson.title }}</td>
+        <td>{{ ex.title }}</td>
+        <td>{{ ex.get_exercise_type_display }}</td>
+        <td>
+          {% if ex.audio_file %}
+            <audio controls src="{{ ex.audio_file.url }}"></audio>
+          {% else %} - {% endif %}
+        </td>
+        <td>
+          {% if ex.video_file %}
+            <a href="{{ ex.video_file }}" target="_blank">View Video</a>
+          {% else %} - {% endif %}
+        </td>
+        <td>
+          <a href="{% url 'listening_exercise_update' ex.pk %}" class="btn">Edit</a>
+          <a href="{% url 'listening_exercise_delete' ex.pk %}" class="btn btn-danger">Delete</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6">No listening exercises yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

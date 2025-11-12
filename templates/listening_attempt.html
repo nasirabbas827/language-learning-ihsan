@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Listening - {{ lesson.title }}{% endblock %}
+{% block content %}
+<div class="card">
+    <h2>Listening Exercise for {{ lesson.title }}</h2>
+    {% for exercise in exercises %}
+        <h4>{{ exercise.title }}</h4>
+        <p>{{ exercise.description }}</p>
+        
+        {% if exercise.audio_file %}
+            <audio controls>
+                <source src="{{ exercise.audio_file.url }}" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+        {% endif %}
+
+        {% if exercise.video_file %}
+            <iframe width="560" height="315" src="{{ exercise.video_file }}" frameborder="0" allowfullscreen></iframe>
+        {% endif %}
+    {% endfor %}
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-warning">Mark as Completed</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Teacher Dashboard{% endblock %}
+{% block content %}
+
+<div class="container mt-5">
+
+    <header class="mb-5 p-4 bg-primary text-white rounded-3 shadow-lg">
+
+        <h1 class="display-5 fw-bold">
+            👋 Welcome, Tutor {{ username|capfirst }}!
+        </h1>
+        <p class="lead">
+            Your hub for creating educational content and monitoring student performance.
+        </p>
+    </header>
+
+    <h2 class="mb-4 text-secondary">🚀 Quick Actions</h2>
+    <a href="{% url 'teacher_suggestions' %}" class=" m-3 float-right btn btn-primary">
+    <i class="fas fa-comments"></i> Give Student Suggestion & Improvements
+</a>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+        
+        <div class="col">
+            <div class="card h-100 border-success shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-success">📝 Create New Lesson</h5>
+                    <p class="card-text">Design and publish a new lesson, quiz, or exercise.</p>
+                    <a href="{% url 'lesson_create' %}" class="btn btn-success mt-2">
+                        <i class="bi bi-plus-circle-fill me-2"></i> Start Creating
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card h-100 border-warning shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-warning">🔔 Review Submissions</h5>
+                    <p class="card-text">Check new writing and speaking exercises needing feedback.</p>
+                    {# Note: This URL points to the dashboard itself with a fragment, as a dedicated review URL was not provided #}
+                    <a href="{% url 'teacher_dashboard' %}#submissions" class="btn btn-warning text-dark mt-2">
+                        <i class="bi bi-chat-dots-fill me-2"></i> Go to Review
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col">
+            <div class="card h-100 border-info shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-info">🗓️ Schedule Live Session</h5>
+                    <p class="card-text">Plan a live online class for your students.</p>
+                    <a href="{% url 'live_session_create' %}" class="btn btn-info text-dark mt-2">
+                        <i class="bi bi-camera-video-fill me-2"></i> Schedule Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <h2 class="mb-3 mt-5">📚 Your Created Lessons</h2>
+    <div class="table-responsive shadow-sm rounded-3 mb-5">
+        <table class="table table-hover align-middle bg-white">
+            <thead class="bg-light">
+                <tr>
+                    <th>Lesson Title</th>
+                    <th>Skill Level</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lesson in lessons %}
+                    <tr>
+                        <td class="fw-bold">{{ lesson.title }}</td>
+                        <td>
+                            <span class="badge 
+                                {% if lesson.skill_level == 'beginner' %}bg-primary
+                                {% elif lesson.skill_level == 'intermediate' %}bg-warning text-dark
+                                {% else %}bg-danger
+                                {% endif %}">
+                                {{ lesson.skill_level|capfirst }}
+                            </span>
+                        </td>
+                        <td>{{ lesson.category|capfirst }}</td>
+                        <td><i class="bi bi-check-circle-fill text-success me-1"></i> Published</td>
+                        <td>
+                            <a href="{% url 'lesson_update' pk=lesson.pk %}" class="btn btn-sm btn-outline-secondary me-2">Edit</a>
+                            <a href="{% url 'lesson_detail' pk=lesson.pk %}" class="btn btn-sm btn-outline-info">View</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center p-3">
+                            <i class="bi bi-exclamation-triangle-fill text-muted me-2"></i> No lessons created yet.
+                            <a href="{% url 'lesson_create' %}" class="btn btn-link p-0">Create one now.</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <hr>
+    
+    <h2 class="mb-3 mt-5">📈 Student Progress Overview</h2>
+    <div class="table-responsive shadow-sm rounded-3 mb-5">
+        <table class="table table-hover align-middle bg-white">
+            <thead class="bg-light">
+                <tr>
+                    <th>Student</th>
+                    <th>Lesson</th>
+                    <th>% Complete</th>
+                    <th>Quiz</th>
+                    <th>Writing</th>
+                    <th>Listening</th>
+                    <th>Speaking</th>
+                    <th>Last Updated</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for prog in student_progress %}
+                    <tr>
+                        <td class="fw-semibold">{{ prog.student.username }}</td>
+                        <td>{{ prog.lesson.title }}</td>
+                        <td>
+                            {% with percentage=prog.completion_percentage %}
+                                <div class="progress" style="min-width: 100px;">
+                                    <div class="progress-bar 
+                                        {% if percentage >= 100 %}bg-success
+                                        {% elif percentage >= 50 %}bg-info
+                                        {% else %}bg-warning
+                                        {% endif %}" 
+                                        role="progressbar" 
+                                        style="width: {{ percentage }}%;" 
+                                        aria-valuenow="{{ percentage|floatformat:0 }}" 
+                                        aria-valuemin="0" aria-valuemax="100">
+                                        {{ percentage|floatformat:0 }}%
+                                    </div>
+                                </div>
+                            {% endwith %}
+                        </td>
+                        
+                        {# FIX APPLIED: Ensured correct closing of {% if %} tags to prevent TemplateSyntaxError #}
+                        <td>{% if prog.completed_quiz %}<span class="text-success fw-bold">✔</span>{% else %}<span class="text-danger">✘</span>{% endif %}</td>
+                        <td>{% if prog.completed_writing %}<span class="text-success fw-bold">✔</span>{% else %}<span class="text-danger">✘</span>{% endif %}</td>
+                        <td>{% if prog.completed_listening %}<span class="text-success fw-bold">✔</span>{% else %}<span class="text-danger">✘</span>{% endif %}</td>
+                        <td>{% if prog.completed_speaking %}<span class="text-success fw-bold">✔</span>{% else %}<span class="text-danger">✘</span>{% endif %}</td>
+                        
+                        <td>{{ prog.last_updated|date:"M d, H:i" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="8" class="text-center p-3 text-muted">No student progress data available yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <hr>
+    
+    <h2 class="mb-3 mt-5" id="submissions">✏️ Writing Submissions for Review</h2>
+    <div class="table-responsive shadow-sm rounded-3 mb-5">
+        <table class="table table-hover align-middle bg-white">
+            <thead class="bg-light">
+                <tr>
+                    <th>Student</th>
+                    <th>Exercise</th>
+                    <th>Submission Preview</th>
+                    <th>Feedback Status</th>
+                    <th>Submitted At</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sub in writing_submissions %}
+                    <tr class="{% if not sub.grammar_feedback and not sub.spelling_feedback %}table-warning{% endif %}">
+                        <td>{{ sub.student.username }}</td>
+                        <td class="fw-semibold">{{ sub.exercise.title }}</td>
+                        <td class="text-muted">{{ sub.essay_text|truncatewords:10 }}</td>
+                        <td>
+                            {% if sub.grammar_feedback or sub.spelling_feedback %}
+                                <span class="badge bg-success">Reviewed</span>
+                            {% else %}
+                                <span class="badge bg-danger">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ sub.submitted_at|date:"M d, H:i" }}</td>
+                        <td>
+                            {# Placeholder URL: Link to the exercise update/grading page #}
+                            <a href="{% url 'writing_exercise_update' pk=sub.exercise.pk %}?submission={{ sub.pk }}" class="btn btn-sm btn-primary">Review</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="6" class="text-center p-3 text-muted">No writing submissions awaiting review.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <hr>
+    
+    <h2 class="mb-3 mt-5">🗣️ Speaking Submissions for Review</h2>
+    <div class="table-responsive shadow-sm rounded-3 mb-5">
+        <table class="table table-hover align-middle bg-white">
+            <thead class="bg-light">
+                <tr>
+                    <th>Student</th>
+                    <th>Exercise</th>
+                    <th>Spoken Text</th>
+                    <th>Score</th>
+                    <th>Feedback Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sub in speaking_submissions %}
+                    <tr class="{% if not sub.feedback %}table-warning{% endif %}">
+                        <td>{{ sub.student.username }}</td>
+                        <td class="fw-semibold">{{ sub.exercise.title }}</td>
+                        <td class="text-muted">{{ sub.spoken_text|default:"[Audio Only]"|truncatewords:10 }}</td>
+                        <td>
+                            <span class="badge 
+                                {% if sub.similarity_score >= 90 %}bg-success
+                                {% elif sub.similarity_score >= 70 %}bg-info
+                                {% else %}bg-danger
+                                {% endif %}">
+                                {{ sub.similarity_score|default:"N/A" }}%
+                            </span>
+                        </td>
+                        <td>
+                            {% if sub.feedback %}
+                                <span class="badge bg-success">Reviewed</span>
+                            {% else %}
+                                <span class="badge bg-danger">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {# Placeholder URL: Link to the exercise update/grading page #}
+                            <a href="{% url 'speaking_exercise_update' pk=sub.exercise.pk %}?submission={{ sub.pk }}" class="btn btn-sm btn-primary">Review</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="6" class="text-center p-3 text-muted">No speaking submissions awaiting review.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

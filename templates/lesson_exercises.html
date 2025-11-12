@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Exercises - {{ lesson.title }}{% endblock %}
+{% block content %}
+<div class="card" style="text-align:center;">
+    <h2>Exercises for {{ lesson.title }}</h2>
+    <p>Select the type of exercise to attempt:</p>
+
+    <div style="display:flex; justify-content:center; gap:20px; margin-top:20px;">
+        {% if lesson.quizzes.exists %}
+            <a href="{% url 'attempt_quiz' lesson.id %}" class="btn btn-info">Quiz</a>
+        {% endif %}
+
+        {% if lesson.writing_exercises.exists %}
+            <a href="{% url 'attempt_writing' lesson.id %}" class="btn btn-success">Writing</a>
+        {% endif %}
+
+        {% if lesson.listening_exercises.exists %}
+            <a href="{% url 'attempt_listening' lesson.id %}" class="btn btn-warning">Listening</a>
+        {% endif %}
+
+        {% if lesson.speaking_exercises.exists %}
+            <a href="{% url 'attempt_speaking' lesson.id %}" class="btn btn-primary">Speaking</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

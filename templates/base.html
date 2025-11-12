@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}English Learning App{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Base Styles: Adjusted font stack for a cleaner look and subtle background */
+        body {
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Poppins added for modern feel */
+            margin: 0;
+            padding: 0;
+            background: #e9eff5; /* Slightly lighter and cooler background */
+            color: #2c3e50; /* Darker text for better contrast */
+            line-height: 1.6;
+        }
+
+        /* Navbar: Enhanced with a sticky top, subtle gradient-like effect, and icons */
+        nav {
+            background: linear-gradient(90deg, #34495e 0%, #2c3e50 100%); /* Subtle gradient */
+            color: #fff;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Stronger, modern shadow */
+            position: sticky; /* Make it sticky */
+            top: 0;
+            z-index: 1020; /* Ensure it's above other elements */
+        }
+        nav .nav-brand {
+            font-size: 1.6rem; /* Slightly larger brand text */
+            font-weight: 700;
+            color: #ecf0f1;
+            text-decoration: none;
+            display: flex; /* Align icon and text */
+            align-items: center;
+        }
+        nav .nav-brand i {
+            margin-right: 10px;
+            color: #f1c40f; /* Accent color for the icon */
+        }
+        nav .nav-links a {
+            color: #ecf0f1;
+            margin-left: 20px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease, background-color 0.3s ease;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        nav .nav-links a:hover {
+            color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.1); /* Subtle hover background */
+            text-decoration: none; /* Removed underline to prefer background highlight */
+        }
+        @media (max-width: 600px) {
+            nav {
+                flex-direction: column;
+                padding-bottom: 10px;
+            }
+            nav .nav-links {
+                margin-top: 10px;
+                text-align: center;
+            }
+            nav .nav-links a {
+                display: block;
+                margin: 5px 0;
+            }
+        }
+
+        /* Main Container */
+        .container {
+            padding: 40px 20px; /* Increased top/bottom padding */
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Flash Messages: More distinct and friendlier colors with a closing icon */
+        .message {
+            background: #e0f7fa;
+            color: #00796b;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #b2ebf2;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .message.error {
+            background: #fdeaea; /* Lighter error color */
+            color: #cc0000;
+            border-color: #f19a9a;
+        }
+        .message.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-color: #a5d6a7;
+        }
+
+        /* General table styling: More professional look */
+        .table {
+            width: 100%;
+            margin-bottom: 1.5rem; /* Increased margin */
+            color: #34495e;
+            border-collapse: separate; /* Use separate to enable border-radius on table */
+            border-spacing: 0;
+        }
+
+        /* Table headers */
+        .table thead th {
+            vertical-align: bottom;
+            border-bottom: 3px solid #3498db; /* Blue accent line */
+            padding: 1rem 0.75rem; /* Increased padding */
+            text-align: left;
+            background-color: #eaf1f7; /* Very light blue background for headers */
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        .table thead tr:first-child th:first-child { border-top-left-radius: 8px; }
+        .table thead tr:first-child th:last-child { border-top-right-radius: 8px; }
+
+
+        /* Table cells */
+        .table tbody td {
+            padding: 0.85rem 0.75rem;
+            vertical-align: middle;
+            border-top: 1px solid #e0e6ec; /* Lighter separator */
+            text-align: left;
+        }
+
+        /* Zebra-striping for rows */
+        .table tbody tr:nth-of-type(odd) {
+            background-color: #ffffff; /* Explicitly white for odd rows */
+        }
+        .table tbody tr:nth-of-type(even) {
+             background-color: rgba(52, 152, 219, 0.05); /* Very light blue for even rows */
+        }
+
+
+        /* Hover effect for rows */
+        .table tbody tr:hover {
+            background-color: rgba(52, 152, 219, 0.15); /* Nicer blue on hover */
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(52, 152, 219, 0.1);
+            transform: translateY(-1px);
+            transition: all 0.3s ease;
+        }
+
+        /* Custom styling for the checkmark (✔) and cross (✘) */
+        td .completed-icon {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        td .completed-icon.check {
+            color: #2ecc71; /* Emerald Green */
+        }
+
+        td .completed-icon.cross {
+            color: #e74c3c; /* Alizarin Red */
+        }
+
+        /* Forms & Cards: Clean, elevated look */
+        .card {
+            background: #ffffff;
+            padding: 30px; /* Increased padding */
+            margin-bottom: 30px;
+            border-radius: 12px; /* Softer corners */
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08); /* Elevated shadow */
+        }
+        form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700; /* Bolder label */
+            color: #34495e;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        input[type="datetime-local"],
+        input[type="form-control"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #dcdfe4; /* Lighter border */
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        input:focus, textarea:focus, select:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 8px rgba(52, 152, 219, 0.3); /* Softer focus shadow */
+        }
+        textarea {
+            min-height: 150px; /* Taller textarea */
+            resize: vertical;
+        }
+
+        /* Buttons: Brighter and more defined hover effects */
+        .btn {
+            display: inline-block;
+            padding: 12px 30px; /* Slightly wider button */
+            background: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 17px; /* Slightly larger font */
+            font-weight: 700;
+            transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+        }
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .btn-success {
+            background: #2ecc71; /* Emerald Green */
+        }
+        .btn-success:hover {
+            background: #27ae60;
+        }
+        .btn-danger {
+            background: #e74c3c; /* Alizarin Red */
+        }
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        /* Footer: Clearer separation and icon for brand */
+        footer {
+            background: #34495e; /* Match main navbar color */
+            color: #fff;
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 50px;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
+        }
+        .footer-links {
+            margin-bottom: 15px;
+        }
+        .footer-links a {
+            color: #ecf0f1;
+            text-decoration: none;
+            margin: 0 20px;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        .footer-links a:hover {
+            color: #f1c40f; /* Use accent color on hover */
+            text-decoration: underline;
+        }
+        footer p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #bdc3c7;
+        }
+
+        /* Dashboard/Extra Components (Enhanced) */
+        .badge-card, .certificate-card {
+            background-color: #ffffff;
+            border: 1px solid #e0e6ec;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        .badge-card:hover, .certificate-card:hover {
+            transform: translateY(-5px); /* More noticeable lift */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        .badge-card i {
+            font-size: 3rem; /* Larger icons for visual impact */
+            color: #f39c12; /* Badge-specific color */
+            margin-bottom: 15px;
+        }
+        .card-header {
+            background-color: #f5f7f9; /* Light header background */
+            font-weight: 700;
+            color: #34495e;
+            padding: 15px;
+        }
+        .progress-bar {
+            background-color: #3498db;
+        }
+
+        /* New styles for leaderboard: Kept and slightly enhanced */
+        .table-success {
+            background-color: #d4edda !important; /* Highlight current user - Success color */
+            font-weight: bold;
+        }
+        .table-primary {
+            background-color: #cce5ff !important; /* Alternate highlight color (e.g., top 3) */
+        }
+        .table th, .table td {
+            vertical-align: middle;
+            text-align: center;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<nav>
+    <a href="{% url 'index' %}" class="nav-brand"><i class="fas fa-book-open"></i> Learn English</a>
+    <div class="nav-links">
+        {% if request.session.user_id %}
+            {% if request.session.usertype == 'student' %}
+                <a href="{% url 'student_dashboard' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="{% url 'student_leaderboard' %}"><i class="fas fa-trophy"></i> Leaderboard</a>
+                <a href="{% url 'student_live_sessions' %}"><i class="fas fa-video"></i> Sessions</a>
+                <a href="{% url 'peer_chat' %}"><i class="fas fa-comments"></i> Chat</a>
+                <a href="{% url 'discussion_threads' %}"><i class="fas fa-users"></i> Threads</a>
+                <a href="{% url 'student_suggestions' %}"><i class="fas fa-comments"></i> Suggestion</a>
+
+            {% elif request.session.usertype == 'teacher' %}
+                <a href="{% url 'teacher_dashboard' %}"><i class="fas fa-chalkboard-teacher"></i> Dashboard</a>
+                <a href="{% url 'lesson_list' %}"><i class="fas fa-file-alt"></i> Lessons</a>
+                <a href="{% url 'content_list' %}"><i class="fas fa-cubes"></i> Content</a>
+                <a href="{% url 'exercise_home' %}"><i class="fas fa-dumbbell"></i> Exercises</a>
+                <a href="{% url 'live_session_list' %}"><i class="fas fa-calendar-alt"></i> Sessions</a>
+                <a href="{% url 'peer_chat' %}"><i class="fas fa-comments"></i> Chat</a>
+
+            {% endif %}
+            <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        {% else %}
+            <a href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Login</a>
+            <a href="{% url 'register' %}"><i class="fas fa-user-plus"></i> Register</a>
+        {% endif %}
+    </div>
+</nav>
+
+<div class="container">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="message alert alert-dismissible fade show {{ message.tags }}" role="alert">
+            <span class="{% if 'error' in message.tags %}text-danger{% elif 'success' in message.tags %}text-success{% else %}text-info{% endif %} me-2">
+                <i class="{% if 'error' in message.tags %}fas fa-exclamation-circle{% elif 'success' in message.tags %}fas fa-check-circle{% else %}fas fa-info-circle{% endif %}"></i>
+            </span>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+    {% block content %}{% endblock %}
+</div>
+
+<footer>
+    <div class="footer-links">
+        <a href="#"><i class="fas fa-info-circle"></i> About Us</a>
+        <a href="#"><i class="fas fa-file-contract"></i> Terms and Conditions</a>
+        <a href="#"><i class="fas fa-envelope"></i> Contact Us</a>
+    </div>
+    <p><i class="fas fa-graduation-cap"></i> &copy; 2025 English Learning App. All rights reserved.</p>
+</footer>
+</body>
+</html>

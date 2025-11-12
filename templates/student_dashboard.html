@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% block title %}Student Dashboard{% endblock %}
+{% block content %}
+{% load static %}
+
+<div class="container mt-5">
+    <div class="card shadow-lg mb-5 text-center bg-light">
+        <div class="card-body p-4">
+            <h1 class="display-4 text-primary">👋 Welcome Back, {{ username }}!</h1>
+            <p class="lead text-secondary">Ready to boost your English skills? Access your learning path and track your success below.</p>
+            <a href="{% url 'student_live_sessions' %}" class="btn btn-info btn-lg me-3 mt-3">Join Live Session</a>
+            <a href="{% url 'student_leaderboard' %}" class="btn btn-primary btn-lg mt-3">View Leaderboard</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">⭐ Your Points</h3>
+                </div>
+                <div class="card-body text-center">
+                    <h1 class="display-3 text-primary">{{ total_points }}</h1>
+                    <p class="text-muted">Total Points Earned</p>
+                    <p class="small">Earn more points by completing lessons and exercises to unlock achievements!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0">📚 Learning Paths</h3>
+                </div>
+                <div class="card-body d-flex flex-column justify-content-around">
+                    <p class="text-center lead">Select a skill level to continue your lessons:</p>
+                    <div class="d-grid gap-3 d-md-flex justify-content-md-center">
+                        <a href="{% url 'lesson_by_level' 'beginner' %}" class="btn btn-success btn-lg">Beginner</a>
+                        <a href="{% url 'lesson_by_level' 'intermediate' %}" class="btn btn-info btn-lg">Intermediate</a>
+                        <a href="{% url 'lesson_by_level' 'advanced' %}" class="btn btn-warning btn-lg">Advanced</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card shadow-lg mb-5">
+        <div class="card-header bg-info text-white">
+            <h3 class="mb-0">🏆 Your Certificates</h3>
+        </div>
+        <div class="card-body">
+            {% if certificates %}
+                <div class="row row-cols-1 row-cols-md-3 g-4">
+                    {% for certificate in certificates %}
+                        <div class="col">
+                            <div class="certificate-card p-4 border rounded text-center h-100 shadow-sm">
+                                <span class="h1 text-success d-block mb-2">🏅</span> <h5 class="mt-2 text-dark">{{ certificate.skill_level|title }} Certificate</h5>
+                                <p class="text-muted small mb-1">ID: {{ certificate.certificate_id }}</p>
+                                <small class="text-secondary d-block">Issued: {{ certificate.issued_at|date:"F d, Y" }}</small>
+                                <div class="mt-3">
+                                    <a href="{% url 'certificate_pdf' certificate.certificate_id %}" class="btn btn-sm btn-success">Download PDF</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-light text-center" role="alert">
+                    <p class="mb-0">You haven't earned any certificates yet. Complete all lessons in a skill level to achieve one!</p>
+                </div>
+            {% endif %}
+
+            <h4 class="mt-5 border-bottom pb-2">Certificate Progress by Level</h4>
+            {% for progress in certificate_progress %}
+                {% if progress.total_lessons > 0 %}
+                    <div class="mb-3">
+                        <h5 class="text-secondary">{{ progress.skill_level|title }} Level</h5>
+                        <p class="mb-1">Lessons Completed: **{{ progress.completed_lessons }}/{{ progress.total_lessons }}** ({{ progress.completion_percentage|floatformat:1 }}%)</p>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar bg-info" role="progressbar" 
+                                style="width: {{ progress.completion_percentage }}%;" 
+                                aria-valuenow="{{ progress.completion_percentage }}" 
+                                aria-valuemin="0" aria-valuemax="100">
+                                {{ progress.completion_percentage|floatformat:1 }}%
+                            </div>
+                        </div>
+                        {% if progress.has_certificate %}
+                            <p class="text-success mt-2 fw-bold">Achievement Unlocked!</p>
+                        {% else %}
+                            {% if progress.remaining_lessons > 0 %}
+                                <p class="text-muted mt-2 small">
+                                    Complete **{{ progress.remaining_lessons }}** more lesson(s) to earn the {{ progress.skill_level|title }} certificate.
+                                </p>
+                            {% else %}
+                                <p class="text-info mt-2 small">Certificate is ready! Complete one more lesson to finalize the award.</p>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card shadow-lg mb-5">
+        <div class="card-header bg-warning text-dark">
+            <h3 class="mb-0">🏅 Your Badges</h3>
+        </div>
+        <div class="card-body">
+            {% if student_badges %}
+                <div class="row row-cols-2 row-cols-md-4 g-4">
+                    {% for student_badge in student_badges %}
+                        <div class="col text-center">
+                            <div class="badge-card p-3 border rounded h-100 shadow-sm">
+                                {% if student_badge.badge.icon %}
+                                    <img src="{{ student_badge.badge.icon.url }}" alt="{{ student_badge.badge.name }}" class="img-fluid mb-2" style="max-width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #f1c40f;">
+                                {% else %}
+                                    <span class="h1 text-warning d-block mb-2">⭐</span> {% endif %}
+                                <h6 class="mt-2 text-dark">{{ student_badge.badge.name }}</h6>
+                                <p class="text-muted small mb-1">{{ student_badge.badge.description }}</p>
+                                <small class="text-secondary">Earned: {{ student_badge.awarded_at|date:"F d, Y" }}</small>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-light text-center" role="alert">
+                    <p class="mb-0">You haven't earned any badges yet. Keep learning to unlock your first badge!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card shadow-lg mb-5">
+        <div class="card-header bg-secondary text-white">
+            <h3 class="mb-0">📝 Recent Lesson Progress</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Lesson Title</th>
+                            <th>Quiz Score</th>
+                            <th>Writing</th>
+                            <th>Listening</th>
+                            <th>Speaking Score</th>
+                            <th>Overall Progress</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in lessons_with_progress|slice:":10" %}
+                            <tr>
+                                <td><a href="{% url 'lesson_detail' item.lesson.id %}" class="text-primary fw-bold">{{ item.lesson.title }}</a></td>
+                                <td>
+                                    {% if item.progress and item.progress.completed_quiz %}
+                                        <span class="text-success fw-bold">Complete</span> ({% if item.quiz_score is not None %}{{ item.quiz_score }}%{% else %}N/A{% endif %})
+                                    {% else %}
+                                        <span class="text-danger">Incomplete</span>
+                                    {% endif %}
+                                </td>
+                                <td>{% if item.progress and item.progress.completed_writing %}<span class="text-success fw-bold">Complete</span>{% else %}<span class="text-danger">Incomplete</span>{% endif %}</td>
+                                <td>{% if item.progress and item.progress.completed_listening %}<span class="text-success fw-bold">Complete</span>{% else %}<span class="text-danger">Incomplete</span>{% endif %}</td>
+                                <td>
+                                    {% if item.progress and item.progress.completed_speaking %}
+                                        <span class="text-success fw-bold">Complete</span> ({% if item.speaking_score is not None %}{{ item.speaking_score }}%{% else %}N/A{% endif %})
+                                    {% else %}
+                                        <span class="text-danger">Incomplete</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="progress" style="height: 15px;">
+                                        <div class="progress-bar bg-info" role="progressbar" style="width: {{ item.completion_percentage }}%;" aria-valuenow="{{ item.completion_percentage }}" aria-valuemin="0" aria-valuemax="100">
+                                            <small>{{ item.completion_percentage|floatformat:0 }}%</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if item.completion_percentage == 100 %}
+                                        <span class="badge bg-success p-2">Fully Completed</span>
+                                    {% elif item.completion_percentage > 0 %}
+                                        <span class="badge bg-warning p-2 text-dark">In Progress</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary p-2">Not Started</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">No lesson data available. Start your first lesson today!</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-center mt-4">
+                <a href="{% url 'lesson_by_level' 'all' %}" class="btn btn-outline-secondary">View All Lessons</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
