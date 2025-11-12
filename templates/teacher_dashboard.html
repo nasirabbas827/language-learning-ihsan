@@ -191,9 +191,8 @@
                         </td>
                         <td>{{ sub.submitted_at|date:"M d, H:i" }}</td>
                         <td>
-                            {# Placeholder URL: Link to the exercise update/grading page #}
-                            <a href="{% url 'writing_exercise_update' pk=sub.exercise.pk %}?submission={{ sub.pk }}" class="btn btn-sm btn-primary">Review</a>
-                        </td>
+    <a href="{% url 'review_writing_submission' submission_id=sub.pk %}" class="btn btn-sm btn-primary">Review</a>
+</td>
                     </tr>
                 {% empty %}
                     <tr><td colspan="6" class="text-center p-3 text-muted">No writing submissions awaiting review.</td></tr>
@@ -240,9 +239,8 @@
                             {% endif %}
                         </td>
                         <td>
-                            {# Placeholder URL: Link to the exercise update/grading page #}
-                            <a href="{% url 'speaking_exercise_update' pk=sub.exercise.pk %}?submission={{ sub.pk }}" class="btn btn-sm btn-primary">Review</a>
-                        </td>
+    <a href="{% url 'review_speaking_submission' submission_id=sub.pk %}" class="btn btn-sm btn-primary">Review</a>
+</td>
                     </tr>
                 {% empty %}
                     <tr><td colspan="6" class="text-center p-3 text-muted">No speaking submissions awaiting review.</td></tr>

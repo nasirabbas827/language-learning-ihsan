@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Review Writing Submission{% endblock %}
+{% block content %}
+
+<div class="container mt-5">
+    <header class="mb-4 p-4 bg-primary text-white rounded-3 shadow-lg">
+        <h1 class="display-6 fw-bold">Review Writing Submission</h1>
+        <p class="lead">Provide feedback for {{ submission.student.username }}'s submission.</p>
+    </header>
+
+    <div class="card shadow-sm mb-5">
+        <div class="card-body">
+            <h5 class="card-title">Exercise: {{ submission.exercise.title }}</h5>
+            <p class="card-text"><strong>Submitted At:</strong> {{ submission.submitted_at|date:"M d, Y H:i" }}</p>
+            <h6 class="mt-4">Student's Essay:</h6>
+            <div class="p-3 bg-light rounded-3 border">
+                <p>{{ submission.essay_text|linebreaks }}</p>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="mb-3">Provide Feedback</h2>
+    <form method="POST" class="needs-validation" novalidate>
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="{{ form.grammar_feedback.id_for_label }}" class="form-label">Grammar Feedback</label>
+            {{ form.grammar_feedback }}
+            {% if form.grammar_feedback.errors %}
+                <div class="invalid-feedback d-block">{{ form.grammar_feedback.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            <label for="{{ form.spelling_feedback.id_for_label }}" class="form-label">Spelling Feedback</label>
+            {{ form.spelling_feedback }}
+            {% if form.spelling_feedback.errors %}
+                <div class="invalid-feedback d-block">{{ form.spelling_feedback.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Save Feedback</button>
+            <a href="{% url 'teacher_dashboard' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

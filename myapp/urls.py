@@ -81,6 +81,8 @@ urlpatterns = [
     path('teacher/suggestions/edit/<int:suggestion_id>/', views.edit_suggestion, name='edit_suggestion'),
     path('teacher/suggestions/delete/<int:suggestion_id>/', views.delete_suggestion, name='delete_suggestion'),
     path('student/suggestions/', views.student_suggestions, name='student_suggestions'),
+    path('teacher/review-writing-submission/<int:submission_id>/', views.review_writing_submission, name='review_writing_submission'),
+    path('teacher/review-speaking-submission/<int:submission_id>/', views.review_speaking_submission, name='review_speaking_submission'),
 
 
 ]

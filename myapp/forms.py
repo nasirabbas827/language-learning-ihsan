@@ -142,3 +142,25 @@ class TeacherSuggestionForm(forms.ModelForm):
             'student': forms.Select(attrs={'class': 'form-select'}),
             'suggestion_text': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
         }
+
+
+
+from django import forms
+from .models import WritingSubmission, SpeakingSubmission
+
+class WritingSubmissionFeedbackForm(forms.ModelForm):
+    class Meta:
+        model = WritingSubmission
+        fields = ['grammar_feedback', 'spelling_feedback']
+        widgets = {
+            'grammar_feedback': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
+            'spelling_feedback': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
+        }
+
+class SpeakingSubmissionFeedbackForm(forms.ModelForm):
+    class Meta:
+        model = SpeakingSubmission
+        fields = ['feedback']
+        widgets = {
+            'feedback': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
+        }

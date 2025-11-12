@@ -1246,3 +1246,55 @@ def student_suggestions(request):
     suggestions = TeacherSuggestion.objects.filter(student_id=student_id).order_by('-created_at')
 
     return render(request, 'student_suggestions.html', {'suggestions': suggestions})
+
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from .models import WritingSubmission, SpeakingSubmission, UserRegister
+from .forms import WritingSubmissionFeedbackForm, SpeakingSubmissionFeedbackForm
+
+def review_writing_submission(request, submission_id):
+    if request.session.get("usertype") != "teacher":
+        return redirect("login")
+
+    teacher = get_object_or_404(UserRegister, user_id=request.session.get("user_id"))
+    submission = get_object_or_404(WritingSubmission, pk=submission_id)
+
+    if request.method == "POST":
+        form = WritingSubmissionFeedbackForm(request.POST, instance=submission)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Feedback updated successfully!")
+            return redirect("teacher_dashboard")
+    else:
+        form = WritingSubmissionFeedbackForm(instance=submission)
+
+    return render(request, "teacher/review_writing_submission.html", {
+        "form": form,
+        "submission": submission,
+        "student": submission.student,
+        "exercise": submission.exercise,
+    })
+
+def review_speaking_submission(request, submission_id):
+    if request.session.get("usertype") != "teacher":
+        return redirect("login")
+
+    teacher = get_object_or_404(UserRegister, user_id=request.session.get("user_id"))
+    submission = get_object_or_404(SpeakingSubmission, pk=submission_id)
+
+    if request.method == "POST":
+        form = SpeakingSubmissionFeedbackForm(request.POST, instance=submission)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Feedback updated successfully!")
+            return redirect("teacher_dashboard")
+    else:
+        form = SpeakingSubmissionFeedbackForm(instance=submission)
+
+    return render(request, "teacher/review_speaking_submission.html", {
+        "form": form,
+        "submission": submission,
+        "student": submission.student,
+        "exercise": submission.exercise,
+    })
